@@ -2,10 +2,10 @@ package com.holiday.backend.model
 
 data class CategoryResult(
     var error: Boolean,
-    var results: List<ResultsBean> = emptyList()
+    var results: List<ResultsDTO> = emptyList()
 )
 
-data class ResultsBean(
+data class ResultsDTO(
     var _id: String,
     var createdAt: String,
     var desc: String,

@@ -13,19 +13,19 @@ import retrofit2.converter.gson.GsonConverterFactory
  **/
 object RetrofitService {
 
-    private var gankApi: GankAPI? = null
-    private val okHttpClient = OkHttpClient()
+    private var _gankApi: GankAPI? = null
+    private val _okHttpClient = OkHttpClient()
 
     fun getGankApi(): GankAPI {
-        if (gankApi == null) {
+        if (_gankApi == null) {
             val retrofit = Retrofit.Builder()
-                .client(okHttpClient)
+                .client(_okHttpClient)
                 .baseUrl("http://gank.io/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
-            gankApi = retrofit.create(GankAPI::class.java)
+            _gankApi = retrofit.create(GankAPI::class.java)
         }
-        return gankApi!!
+        return _gankApi!!
     }
 }
