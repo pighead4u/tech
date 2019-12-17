@@ -8,6 +8,5 @@ data class HomeVO(
     val type: String,
     val url: String,
     val used: Boolean,
-    val who: String,
-    val images: List<String> = emptyList()
+    val who: String
 )

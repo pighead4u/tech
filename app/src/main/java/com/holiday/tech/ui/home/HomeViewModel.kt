@@ -1,7 +1,8 @@
 package com.holiday.tech.ui.home
 
+import android.util.Log
 import androidx.lifecycle.*
-import com.holiday.backend.CATEGORY_ANDROID
+import com.holiday.backend.CATEGORY_WELFARE
 import com.holiday.backend.RetrofitService
 import com.holiday.tech.model.HomeVO
 import io.reactivex.Flowable
@@ -15,19 +16,20 @@ class HomeViewModel : ViewModel() {
 
     private val query = MutableLiveData<Int>()
 
-    val homeContent: LiveData<List<HomeVO>> = Transformations.switchMap(
+    val homeContent: LiveData<MutableList<HomeVO>> = Transformations.switchMap(
         query,
         ::getGankIOData
     )
 
 
-    fun getGankIOData(page: Int): LiveData<List<HomeVO>> {
+    fun getGankIOData(page: Int): LiveData<MutableList<HomeVO>> {
         val tmp = RetrofitService.getGankApi()
-            .getCategoryData(CATEGORY_ANDROID, 20, page)
+            .getCategoryData(CATEGORY_WELFARE, 20, page)
             .subscribeOn(Schedulers.io())
             .flatMap { t ->
-                var data = listOf<HomeVO>()
+                var data = mutableListOf<HomeVO>()
                 t.results.forEach {
+                    Log.d(TAG, it.toString())
                     val item = HomeVO(
                         it.createdAt,
                         it.desc,
@@ -36,11 +38,13 @@ class HomeViewModel : ViewModel() {
                         it.type,
                         it.url,
                         it.used,
-                        it.who,
-                        it.images
+                        it.who
                     )
-                    data.plus(item)
+                    data.add(item)
                 }
+
+                Log.d(TAG, data.toString())
+
 
                 Flowable.just(data)
             }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.holiday.tech.R
 import com.holiday.tech.model.HomeVO
 import kotlinx.android.synthetic.main.home_item.view.*
@@ -22,7 +23,8 @@ class HomeAdapter(val data: List<HomeVO>) : RecyclerView.Adapter<HomeViewHolder>
         return HomeViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.home_item,
-                parent
+                parent,
+                false
             )
         )
     }
@@ -32,6 +34,9 @@ class HomeAdapter(val data: List<HomeVO>) : RecyclerView.Adapter<HomeViewHolder>
     override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
         val item = data[position]
         Log.d(TAG, item.url)
+        Glide.with(holder.ivGirl.context)
+            .load(item.url)
+            .into(holder.ivGirl)
     }
 }
 
