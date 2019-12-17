@@ -1,7 +1,6 @@
 package com.holiday.tech.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,15 +30,16 @@ class HomeFragment : Fragment() {
 
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
+        homeAdapter = HomeAdapter()
+
+        root.homeContent.let {
+            it.layoutManager = LinearLayoutManager(context)
+            it.adapter = homeAdapter
+        }
+
         homeViewModel.homeContent.observe(this, Observer {
-
-            Log.d(TAG, "data" + it.size)
-            homeAdapter = HomeAdapter(it)
-
-            root.homeContent.let {
-                it.layoutManager = LinearLayoutManager(context)
-                it.adapter = homeAdapter
-            }
+            homeAdapter.setData(it)
+            homeAdapter.notifyDataSetChanged()
         })
 
 
