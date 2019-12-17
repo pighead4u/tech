@@ -9,11 +9,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.holiday.tech.R
-import kotlinx.android.synthetic.main.fragment_home.*
+import com.holiday.tech.model.HomeVO
+import kotlinx.android.synthetic.main.fragment_home.view.*
 
 class HomeFragment : Fragment() {
 
+    private val TAG = "HomeFragment"
+
     private lateinit var homeViewModel: HomeViewModel
+    private lateinit var homeAdapter: HomeAdapter
+    private lateinit var data: List<HomeVO>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,21 +30,19 @@ class HomeFragment : Fragment() {
 
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
-        initView()
-        initData()
+        homeViewModel.homeContent.observe(this, Observer {
+
+            homeAdapter = HomeAdapter(it)
+
+            root.homeContent.let {
+                it.layoutManager = LinearLayoutManager(context)
+                it.adapter = homeAdapter
+            }
+        })
+
+
 
         return root
     }
 
-    fun initView() {
-        homeContent?.let {
-            it.layoutManager = LinearLayoutManager(context)
-        }
-    }
-
-    fun initData() {
-        homeViewModel.homeContent.observe(this, Observer {
-
-        })
-    }
 }

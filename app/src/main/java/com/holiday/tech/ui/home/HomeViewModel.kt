@@ -1,32 +1,32 @@
 package com.holiday.tech.ui.home
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.holiday.backend.CATEGORY_ANDROID
 import com.holiday.backend.RetrofitService
 import com.holiday.tech.model.HomeVO
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 
 class HomeViewModel : ViewModel() {
 
     private val TAG = "HomeViewModel"
 
-    private val _homeContent = MutableLiveData<List<HomeVO>>()
+    private var page = 1
 
-    val homeContent: LiveData<List<HomeVO>> = _homeContent
+    private val query = MutableLiveData<Int>()
 
-    fun getGankIOData(page: Int) {
-        RetrofitService.getGankApi()
+    val homeContent: LiveData<List<HomeVO>> = Transformations.switchMap(
+        query,
+        ::getGankIOData
+    )
+
+
+    fun getGankIOData(page: Int): LiveData<List<HomeVO>> {
+        val tmp = RetrofitService.getGankApi()
             .getCategoryData(CATEGORY_ANDROID, 20, page)
             .subscribeOn(Schedulers.io())
             .flatMap { t ->
-                var data = ArrayList<HomeVO>()
+                var data = listOf<HomeVO>()
                 t.results.forEach {
                     val item = HomeVO(
                         it.createdAt,
@@ -39,31 +39,19 @@ class HomeViewModel : ViewModel() {
                         it.who,
                         it.images
                     )
-                    data.add(item)
+                    data.plus(item)
                 }
 
-                Observable.just(data)
+                Flowable.just(data)
             }
             .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : Observer<List<HomeVO>> {
-                override fun onComplete() {
-                    Log.d(TAG, "oncomplete")
-                }
 
-                override fun onSubscribe(d: Disposable) {
-                }
+        return LiveDataReactiveStreams.fromPublisher(tmp)
 
-                override fun onNext(t: List<HomeVO>) {
-                    _homeContent.value = t
+    }
 
-                }
-
-                override fun onError(e: Throwable) {
-                    Log.e(TAG, "getGankIOData:", e)
-                }
-
-            })
-
+    fun addPage() {
+        page++
+        query.value = page
     }
 }
