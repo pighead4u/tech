@@ -3,6 +3,8 @@ package com.holiday.tech.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.holiday.tech.R
@@ -42,6 +44,9 @@ class HomeAdapter() : RecyclerView.Adapter<HomeViewHolder>() {
         Glide.with(holder.ivGirl.context)
             .load(item.url)
             .into(holder.ivGirl)
+        holder.ivGirl.setOnClickListener {
+            it.findNavController().navigate(R.id.action_view_photo, bundleOf("imgUrl" to item.url))
+        }
     }
 }
 
